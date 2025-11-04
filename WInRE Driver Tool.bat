@@ -52,9 +52,8 @@ echo Windows Recovery Environment disabled.
 goto "DiskPartSet"
 
 :"DisableReAgentcError"
-echo There has been an error! Press any key to try again.
-pause > nul 2>&1
-goto "DisableReAgentc"
+echo There has been an error! Windows Recovery Environmen may have already been disabled.
+goto "DiskPartSet"
 
 :"DiskPartSet"
 set DiskPart=
@@ -571,9 +570,8 @@ echo Windows Recovery Environment enabled.
 goto "Start"
 
 :"EnableReAgentcError"
-echo There has been an error! Press any key to try again.
-pause > nul 2>&1
-goto "EnableReAgentc"
+echo There has been an error! Windows Recovery Environment may have already been enabled.
+goto "Start"
 
 :"Exit"
 endlocal
