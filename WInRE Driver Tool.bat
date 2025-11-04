@@ -458,8 +458,8 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
-if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
-if /i "%WinREAsk%"=="No" goto "Start"
+if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"RemoveLetter"
 if exist "diskpart.txt" goto "DiskPartExistRemoveLetter"
