@@ -424,8 +424,8 @@ goto "RemoveDriver"
 echo.
 set RemoveAnotherDriver=
 set /p RemoveAnotherDriver="Do you remove another driver? (Yes/No) "
-if /i "%RemoveAnotherDriver%"=="Yes" goto "OptimizeAsk"
-if /i "%RemoveAnotherDriver%"=="No" goto "Unmount"
+if /i "%RemoveAnotherDriver%"=="Yes" goto "3"
+if /i "%RemoveAnotherDriver%"=="No" goto "OptimizeAsk"
 echo Invalid syntax!
 goto "RemoveAnotherDriver"
 
