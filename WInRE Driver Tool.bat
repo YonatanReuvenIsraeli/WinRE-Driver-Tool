@@ -477,9 +477,9 @@ if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"Export"
 echo.
-echo Exporting Windows Recovery Environment to "%SystemDrive%\Mount".
-"%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\Mount\winre.wim"
-echo Windows Recovery Environment exported to "%SystemDrive%\Mount".
+echo Exporting Windows Recovery Environment to "%SystemDrive%\winre.wim".
+"%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\winre.wim"
+echo Windows Recovery Environment exported to "%SystemDrive%\winre.wim".
 if not "%errorlevel%"=="0" goto "ExportError"
 goto "Overwrite"
 
@@ -492,7 +492,8 @@ goto "Export"
 echo.
 echo Overwriting Windows Recovery Environment.
 del "%WinREPath%\winre.wim" /f /q > nul 2>&1
-copy "%SystemDrive%\Mount\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
+copy "%SystemDrive%\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
+del "%SystemDrive%\winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten.
 if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
 if /i "%WinREAsk%"=="No" goto "Start"
