@@ -34,17 +34,27 @@ echo [4] Exit.
 echo.
 set Input=
 set /p Input="What do you want to do? (1-4) "
-if /i "%Input%"=="1" goto "ReAgentc"
-if /i "%Input%"=="2" goto "ReAgentc"
-if /i "%Input%"=="3" goto "ReAgentc"
+if /i "%Input%"=="1" goto "DisableReAgentc"
+if /i "%Input%"=="2" goto "DisableReAgentc"
+if /i "%Input%"=="3" goto "DisableReAgentc"
 if /i "%Input%"=="4" goto "Exit"
 echo Invalid syntax!
 goto "Start"
 
-:"ReAgentc"
+:"DisableReAgentc"
 echo.
 "%windir%\System32\ReAgentc.exe" /info
+echo.
+echo Disabling Windows Recovery Environment.
+"%windir%\System32\ReAgentc.exe" /disable > nul 2>&1
+if not "%errorlevel%"=="0" goto "DisableAgentcError"
+echo Windows Recovery Environment disabled.
 goto "DiskPartSet"
+
+:"DisableReAgentcError"
+echo There has been an error! Press any key to try again.
+pause > nul 2>&1
+goto "DisableReAgentc"
 
 :"DiskPartSet"
 set DiskPart=
@@ -453,7 +463,7 @@ rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
 if /i "%Optimize%"=="Yes" goto "Export"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "EnableReAgentc"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"UnmountError"
@@ -472,7 +482,7 @@ echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
 if /i "%Optimize%"=="Yes" goto "ExportSet"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "EnableReAgentc"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"ExportSet"
@@ -508,7 +518,7 @@ copy "%SystemDrive%\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
 del "%SystemDrive%\winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten.
 if /i "%Export%"=="True" goto "ExportDone"
-if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="Yes" goto "EnableReAgentc"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"ExportDone"
@@ -516,7 +526,7 @@ set Export=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\winre.wim". Press any key to continue.
 pause > nul 2>&1
-if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="Yes" goto "EnableReAgentc"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"RemoveLetter"
@@ -531,7 +541,7 @@ if not "%errorlevel%"=="0" goto "RemoveLetterError"
 del "diskpart.txt" /f /q > nul 2>&1
 echo Removed drive letter %WinREDriveLetter% from volume %WinREVolume%.
 if /i "%DiskPart%"=="True" goto "DiskPartDoneRemoveLetter"
-goto "Start"
+goto "EnableReAgentc"
 
 "DiskPartExistRemoveLetter"
 set DiskPart=True
@@ -551,7 +561,19 @@ goto "RemoveLetter"
 echo.
 echo You can now rename or move the file back to "diskpart.txt". Press any key to continue.
 pause > nul 2>&1
+goto "EnableReAgentc"
+
+:"EnableReAgentc"
+echo Enabling Windows Recovery Environment.
+"%windir%\System32\ReAgentc.exe" /enable > nul 2>&1
+if not "%errorlevel%"=="0" goto "EnableReAgentcError"
+echo Windows Recovery Environment enabled.
 goto "Start"
+
+:"EnableReAgentcError"
+echo There has been an error! Press any key to try again.
+pause > nul 2>&1
+goto "EnableReAgentc"
 
 :"Exit"
 endlocal
