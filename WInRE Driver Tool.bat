@@ -176,7 +176,7 @@ goto "AssignDriveLetterWinRE"
 if exist "diskpart.txt" goto "DiskPartExistAssignDriveLetterWinRE"
 echo.
 echo Assigning WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
-(echo automount scrub) >
+(echo automount scrub) > "diskpart.txt"
 (echo sel vol %WinREVolume%) >> "diskpart.txt"
 (echo assign letter=%WinREDriveLetter%) >> "diskpart.txt"
 (echo exit) >> "diskpart.txt"
