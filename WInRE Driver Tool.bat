@@ -526,7 +526,7 @@ echo Removing drive letter %WinREDriveLetter% from volume %WinREVolume%.
 (echo sel vol %WinREVolume%) > "diskpart.txt"
 (echo remove letter=%WinREDriveLetter%) >> "diskpart.txt"
 (echo exit) >> "diskpart.txt"
-"%windir%\System32\diskpart.exe" /s "diskpart.txt" 2>&1
+"%windir%\System32\diskpart.exe" /s "diskpart.txt" > nul 2>&1
 if not "%errorlevel%"=="0" goto "RemoveLetterError"
 del "diskpart.txt" /f /q > nul 2>&1
 echo Removed drive letter %WinREDriveLetter% from volume %WinREVolume%.
