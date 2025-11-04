@@ -473,17 +473,29 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
-if /i "%Optimize%"=="Yes" goto "Export"
+if /i "%Optimize%"=="Yes" goto "ExportSet"
 if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
+:"ExportSet"
+set Export=
+goto "Export"
+
 :"Export"
+if exist "%SystemDrive%\winre.wim" goto "ExportExist"
 echo.
 echo Exporting Windows Recovery Environment to "%SystemDrive%\winre.wim".
 "%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\winre.wim"
 echo Windows Recovery Environment exported to "%SystemDrive%\winre.wim".
 if not "%errorlevel%"=="0" goto "ExportError"
 goto "Overwrite"
+
+:"ExportExist"
+set Export=True
+echo.
+echo Please temporarily rename to something else or temporarily move to another location "%SystemDrive%\winre.wim" in order for this batch file to proceed. "%SystemDrive%\winre.wim" is not a system file. Press any key to continue when "%SystemDrive%\winre.wim" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
+pause > nul 2>&1
+goto "Export"
 
 :"ExportError"
 echo There has been an error! Press any key to try again.
@@ -493,10 +505,19 @@ goto "Export"
 :"Overwrite"
 echo.
 echo Overwriting Windows Recovery Environment.
-del "%WinREPath%\winre.wim" /f /q > nul 2>&1
-copy "%SystemDrive%\winre.wim" "%WinREPath% /y /v > nul 2>&1
+"%windir%\System32\attrib.exe" -s -h "%WinREPath%\winre.wim"
+copy "%SystemDrive%\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
 del "%SystemDrive%\winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten.
+if /i "%Export%"=="True" goto "ExportDone"
+if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+
+:"ExportDone"
+set Export=
+echo.
+echo You can now rename or move the file back to "%SystemDrive%\winre.wim". Press any key to continue.
+pause > nul 2>&1
 if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
