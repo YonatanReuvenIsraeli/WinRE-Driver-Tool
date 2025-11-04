@@ -47,7 +47,7 @@ echo.
 echo.
 echo Disabling Windows Recovery Environment.
 "%windir%\System32\ReAgentc.exe" /disable > nul 2>&1
-if not "%errorlevel%"=="0" goto "DisableAgentcError"
+if not "%errorlevel%"=="0" goto "DisableReAgentcError"
 echo Windows Recovery Environment disabled.
 goto "DiskPartSet"
 
