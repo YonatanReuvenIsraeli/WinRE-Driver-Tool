@@ -1,1 +1,1 @@
-# WinRE Driver Tool
+# WinRE Driver Tool v1.0.0
