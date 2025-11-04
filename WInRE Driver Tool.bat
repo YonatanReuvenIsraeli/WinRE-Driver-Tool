@@ -387,7 +387,7 @@ echo.
 set AddAnotherDriver=
 set /p AddAnotherDriver="Do you add another driver? (Yes/No) "
 if /i "%AddAnotherDriver%"=="Yes" goto "2"
-if /i "%AddAnotherDriver%"=="No" goto "Unmount"
+if /i "%AddAnotherDriver%"=="No" goto "OptimizeAsk"
 echo Invalid syntax!'
 goto "AddAnotherDriver"
 
@@ -424,10 +424,26 @@ goto "RemoveDriver"
 echo.
 set RemoveAnotherDriver=
 set /p RemoveAnotherDriver="Do you remove another driver? (Yes/No) "
-if /i "%RemoveAnotherDriver%"=="Yes" goto "3"
+if /i "%RemoveAnotherDriver%"=="Yes" goto "OptimizeAsk"
 if /i "%RemoveAnotherDriver%"=="No" goto "Unmount"
 echo Invalid syntax!
 goto "RemoveAnotherDriver"
+
+:"OptimizeAsk"
+echo.
+set Optimize=
+set /p Optimize="Do you to optimize Windows Recovery Environment? (Yes/No) "
+if /i "%Optimize%"=="Yes" goto "Optimize"
+if /i "%Optimize%"=="No" goto "Unmount"
+echo Invalid syntax!
+goto "OptimizeAsk"
+
+:"Optimize"
+echo.
+echo Cleaning up components.
+"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Cleanup-Image /StartComponentCleanup
+echo Components cleaned up.
+goto "Unmount"
 
 :"Unmount"
 echo.
@@ -450,8 +466,6 @@ echo Cleaning up mounted images.
 rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Mounted images cleaned up.
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
-if /i "%WinREAsk%"=="No" goto "Start"
 
 :"MountDone"
 set Mount=
@@ -460,6 +474,28 @@ echo You can now rename or move the file back to "%SystemDrive%\Mount". Press an
 pause > nul 2>&1
 if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+
+:"Export"
+echo.
+echo Exporting Windows Recovery Environment to "%SystemDrive%\Mount".
+"%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\Mount\winre.wim"
+echo Windows Recovery Environment exported to "%SystemDrive%\Mount".
+if not "%errorlevel%"=="0" goto "ExportError"
+goto "Overwrite"
+
+:"ExportError"
+echo There has been an error! Press any key to try again.
+pause > nul 2>&1
+goto "Export"
+
+:"Overwrite"
+echo.
+echo Overwriting Windows Recovery Environment.
+del "%WinREPath%\winre.wim" /f /q > nul 2>&1
+copy "%SystemDrive%\Mount\winre.wim" "%WinREPath%\winre.wim" /y > nul 2>&1
+echo Windows Recovery Environment overwritten.
+if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
+if /i "%WinREAsk%"=="No" goto "Start"
 
 :"RemoveLetter"
 if exist "diskpart.txt" goto "DiskPartExistRemoveLetter"
