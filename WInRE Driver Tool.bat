@@ -492,7 +492,7 @@ goto "Export"
 echo.
 echo Overwriting Windows Recovery Environment.
 del "%WinREPath%\winre.wim" /f /q > nul 2>&1
-copy "%SystemDrive%\Mount\winre.wim" "%WinREPath%\winre.wim" /y > nul 2>&1
+copy "%SystemDrive%\Mount\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
 echo Windows Recovery Environment overwritten.
 if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
 if /i "%WinREAsk%"=="No" goto "Start"
