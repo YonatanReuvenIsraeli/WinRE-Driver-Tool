@@ -261,14 +261,23 @@ goto "Volume"
 echo.
 set WinREPath=
 set /p WinREPath="What is the full path to the Windows Recovery Environment (winre.wim)? "
+goto "SureWinREPath"
+
+:"SureWinREPath"
 echo.
 set SureWinREPath=
-set /p SureWinREPath="Are you "%WinREPath%" is the path to the Windows Recovery Environment (winre.wim)? (Yes/No) "
-if /i "%Input%"=="1" if /i "%SureWinREPath%"=="Yes" goto "MountSet"
-if /i "%Input%"=="2" if /i "%SureWinREPath%"=="Yes" goto "MountSet"
-if /i "%Input%"=="3" if /i "%SureWinREPath%"=="Yes" goto "MountSet"
+set /p SureWinREPath="Are you "%WinREPath%" is the path to the folder that Windows Recovery Environment (winre.wim) is in? (Yes/No) "
+if /i "%SureWinREPath%"=="Yes" goto "WinREPathCheckExist"
 if /i "%SureWinREPath%"=="No" goto "WinREPath"
 echo Invalid syntax!
+goto "SureWinREPath"
+
+:"WinREPathCheckExist"
+if not exist "%WinREPath%\winre.wim" goto "WinREPathNotExist"
+goto "MountSet"
+
+:"WinREPathNotExist"
+echo "%WinREPath%\winre.wim" does not exist! Please try again.
 goto "WinREPath"
 
 :"MountSet"
@@ -280,8 +289,8 @@ if exist "%SystemDrive%\Mount" goto "MountExist"
 echo.
 echo Mounting Windows Recovery Environment to "%SystemDrive%\Mount".
 md "%SystemDrive%\Mount" > nul 2>&1
-if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%" /Index:1 /MountDir:"%SystemDrive%\Mount" /ReadOnly
-if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%" /Index:1 /MountDir:"%SystemDrive%\Mount"
+if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount" /ReadOnly
+if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount"
 if not "%errorlevel%"=="0" goto "MountError"
 echo Windows Recovery Environment mounted to "%SystemDrive%\Mount".
 if /i "%Input%"=="1" goto "1"
