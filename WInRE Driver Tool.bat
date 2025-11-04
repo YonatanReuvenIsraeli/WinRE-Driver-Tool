@@ -454,8 +454,9 @@ if not "%errorlevel%"=="0" goto "UnmountError"
 rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%WinREAsk%"=="Yes" goto "RemoveLetter"
-if /i "%WinREAsk%"=="No" goto "Start"
+if /i "%Optimize%"=="Yes" goto "Export"
+if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
@@ -472,7 +473,8 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
-if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%Optimize%"=="Yes" goto "Export"
+if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"Export"
