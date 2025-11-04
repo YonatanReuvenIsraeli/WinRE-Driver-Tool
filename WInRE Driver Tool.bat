@@ -379,8 +379,7 @@ goto "AddAnotherDriver"
 :"Error2"
 echo There has been an error! Press any key to try again.
 pause > nul 2>&1
-goto "AddDriver"
-
+goto "2"
 
 :"AddAnotherDriver"
 echo.
@@ -417,8 +416,7 @@ goto "RemoveAnotherDriver"
 :"Error3"
 echo There has been an error! Press any key to try again.
 pause > nul 2>&1
-goto "RemoveDriver"
-
+goto "3"
 
 :"RemoveAnotherDriver"
 echo.
