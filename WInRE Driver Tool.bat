@@ -260,7 +260,7 @@ goto "Volume"
 :"WinREPath"
 echo.
 set WinREPath=
-set /p WinREPath="What is the full path to the Windows Recovery Environment (winre.wim)? "
+set /p WinREPath="What is the full path to the folder that Windows Recovery Environment (winre.wim) is in? "
 goto "SureWinREPath"
 
 :"SureWinREPath"
