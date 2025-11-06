@@ -27,7 +27,7 @@ goto "Close"
 
 :"Start"
 echo.
-echo [1] View current 3rd-party driver(s) in Windows Recovery Environment.
+echo [1] View current 3rd party driver(s) in Windows Recovery Environment.
 echo [2] Add driver(s) to Windows Recovery Environment.
 echo [3] Remove driver(s) from Windows Recovery Environment.
 echo [4] Exit.
@@ -260,24 +260,24 @@ goto "Volume"
 :"WinREPath"
 echo.
 set WinREPath=
-set /p WinREPath="What is the full path to the folder that Windows Recovery Environment (winre.wim) is in? "
+set /p WinREPath="What is the full path to the folder that Windows Recovery Environment ("Winre.wim") is in? "
 goto "SureWinREPath"
 
 :"SureWinREPath"
 echo.
 set SureWinREPath=
-set /p SureWinREPath="Are you "%WinREPath%" is the path to the folder that Windows Recovery Environment (winre.wim) is in? (Yes/No) "
+set /p SureWinREPath="Are you "%WinREPath%" is the path to the folder that Windows Recovery Environment ("Winre.wim") is in? (Yes/No) "
 if /i "%SureWinREPath%"=="Yes" goto "WinREPathCheckExist"
 if /i "%SureWinREPath%"=="No" goto "WinREPath"
 echo Invalid syntax!
 goto "SureWinREPath"
 
 :"WinREPathCheckExist"
-if not exist "%WinREPath%\winre.wim" goto "WinREPathNotExist"
+if not exist "%WinREPath%\Winre.wim" goto "WinREPathNotExist"
 goto "MountSet"
 
 :"WinREPathNotExist"
-echo "%WinREPath%\winre.wim" does not exist! Please try again.
+echo "%WinREPath%\Winre.wim" does not exist! Please try again.
 goto "WinREPath"
 
 :"MountSet"
@@ -289,8 +289,8 @@ if exist "%SystemDrive%\Mount" goto "MountExist"
 echo.
 echo Mounting Windows Recovery Environment to "%SystemDrive%\Mount".
 md "%SystemDrive%\Mount" > nul 2>&1
-if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount" /ReadOnly
-if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount"
+if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\Winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount" /ReadOnly
+if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Mount-Image /ImageFile:"%WinREPath%\Winre.wim" /Index:1 /MountDir:"%SystemDrive%\Mount"
 if not "%errorlevel%"=="0" goto "MountError"
 echo Windows Recovery Environment mounted to "%SystemDrive%\Mount".
 if /i "%Input%"=="1" goto "1"
@@ -480,18 +480,18 @@ set Export=
 goto "Export"
 
 :"Export"
-if exist "%SystemDrive%\winre.wim" goto "ExportExist"
+if exist "%SystemDrive%\Winre.wim" goto "ExportExist"
 echo.
-echo Exporting Windows Recovery Environment to "%SystemDrive%\winre.wim".
-"%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\winre.wim"
-echo Windows Recovery Environment exported to "%SystemDrive%\winre.wim".
+echo Exporting Windows Recovery Environment to "%SystemDrive%\Winre.wim".
+"%windir%\System32\Dism.exe" /Export-Image /SourceImageFile:"%WinREPath%\Winre.wim" /SourceIndex:1 /DestinationImageFile:"%SystemDrive%\Winre.wim"
+echo Windows Recovery Environment exported to "%SystemDrive%\Winre.wim".
 if not "%errorlevel%"=="0" goto "ExportError"
 goto "Overwrite"
 
 :"ExportExist"
 set Export=True
 echo.
-echo Please temporarily rename to something else or temporarily move to another location "%SystemDrive%\winre.wim" in order for this batch file to proceed. "%SystemDrive%\winre.wim" is not a system file. Press any key to continue when "%SystemDrive%\winre.wim" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
+echo Please temporarily rename to something else or temporarily move to another location "%SystemDrive%\Winre.wim" in order for this batch file to proceed. "%SystemDrive%\Winre.wim" is not a system file. Press any key to continue when "%SystemDrive%\Winre.wim" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
 pause > nul 2>&1
 goto "Export"
 
@@ -502,12 +502,12 @@ goto "Export"
 
 :"Overwrite"
 echo.
-echo Overwriting Windows Recovery Environment.
-"%windir%\System32\attrib.exe" -s -h "%WinREPath%\winre.wim"
-copy "%SystemDrive%\winre.wim" "%WinREPath%\winre.wim" /y /v > nul 2>&1
-"%windir%\System32\attrib.exe" +s +h "%WinREPath%\winre.wim"
-del "%SystemDrive%\winre.wim" /f /q > nul 2>&1
-echo Windows Recovery Environment overwritten.
+echo Overwriting Windows Recovery Environment with optimized image.
+"%windir%\System32\attrib.exe" -s -h "%WinREPath%\Winre.wim"
+copy "%SystemDrive%\Winre.wim" "%WinREPath%\Winre.wim" /y /v > nul 2>&1
+"%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
+del "%SystemDrive%\Winre.wim" /f /q > nul 2>&1
+echo Windows Recovery Environment overwritten with optimized image.
 if /i "%Export%"=="True" goto "ExportDone"
 if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
@@ -515,7 +515,7 @@ if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 :"ExportDone"
 set Export=
 echo.
-echo You can now rename or move the file back to "%SystemDrive%\winre.wim". Press any key to continue.
+echo You can now rename or move the file back to "%SystemDrive%\Winre.wim". Press any key to continue.
 pause > nul 2>&1
 if /i "%WinREAsk%"=="Yes" goto "Start"
 if /i "%WinREAsk%"=="No" goto "RemoveLetter"
