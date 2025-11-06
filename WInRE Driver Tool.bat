@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.0.1
+echo Version: 1.0.2
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -560,4 +560,3 @@ goto "Start"
 :"Exit"
 endlocal
 exit
-
