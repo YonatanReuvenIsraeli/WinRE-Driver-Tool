@@ -352,21 +352,24 @@ goto "1"
 echo.
 set DriverPath=
 set /p DriverPath="What is the full path to your driver(s) (.inf) file(s)? If you specify a folder, all drivers in that folder and its subfolders will install. "
-if not exist "%DriverPath%" goto "DriverNotExist"
 goto "SureDriverPath"
-
-:"DriverNotExist"
-echo "%DriverPath%" does not exist! You can try again.
-goto "2"
 
 :"SureDriverPath"
 echo.
 set SureDriverPath=
 set /p SureDriverPath="Are you sure "%DriverPath%" is the full path to your driver(s) (.inf) file(s)? (Yes/No) "
-if /i "%SureDriverPath%"=="Yes" goto "AddDriver"
+if /i "%SureDriverPath%"=="Yes" goto "CheckExistAddDriver"
 if /i "%SureDriverPath%"=="No" goto "2"
 echo Invalid syntax!
 goto "SureDriverPath"
+
+:"CheckExistAddDriver"
+if not exist "%DriverPath%" goto "DriverNotExist"
+goto "AddDriver"
+
+:"DriverNotExist"
+echo "%DriverPath%" does not exist! You can try again.
+goto "2"
 
 :"AddDriver"
 echo.
@@ -449,7 +452,7 @@ echo Unmounting Windows Recovery Environment from "%SystemDrive%\Mount".
 if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Discard
 if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Commit
 if not "%errorlevel%"=="0" goto "UnmountError"
-if /i "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
+if /i "%Optimize%"=="No "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
 rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
