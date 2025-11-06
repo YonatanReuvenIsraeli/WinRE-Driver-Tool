@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.0.0
+echo Version: 1.0.1
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -52,7 +52,6 @@ goto "Volume"
 
 :"Volume"
 if exist "diskpart.txt" goto "DiskPartExistVolume"
-echo.
 echo Listing volumes attached to this PC.
 (echo list vol) > "diskpart.txt"
 (echo exit) >> "diskpart.txt"
@@ -561,3 +560,4 @@ goto "Start"
 :"Exit"
 endlocal
 exit
+
