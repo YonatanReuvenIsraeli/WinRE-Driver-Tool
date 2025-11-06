@@ -27,7 +27,7 @@ goto "Close"
 
 :"Start"
 echo.
-echo [1] View current driver(s) in Windows Recovery Environment.
+echo [1] View current 3rd-party driver(s) in Windows Recovery Environment.
 echo [2] Add driver(s) to Windows Recovery Environment.
 echo [3] Remove driver(s) from Windows Recovery Environment.
 echo [4] Exit.
@@ -557,3 +557,4 @@ goto "Start"
 :"Exit"
 endlocal
 exit
+
