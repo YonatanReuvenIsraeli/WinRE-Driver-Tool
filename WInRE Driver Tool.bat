@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.0.3
+echo Version: 1.0.4
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -451,13 +451,13 @@ echo Unmounting Windows Recovery Environment from "%SystemDrive%\Mount".
 if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Discard
 if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Commit
 if not "%errorlevel%"=="0" goto "UnmountError"
-if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
+if /i not "%Input%"=="1" if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
 rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%Optimize%"=="Yes" goto "Export"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+if /i not "%Input%"=="1" if /i "%Optimize%"=="Yes" goto "Export"
+if /i "%WinREAsk%"=="Yes" goto "Start"
+if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
