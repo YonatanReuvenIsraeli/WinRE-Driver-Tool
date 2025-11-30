@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.0.2
+echo Version: 1.0.3
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -34,14 +34,14 @@ echo [4] Exit.
 echo.
 set Input=
 set /p Input="What do you want to do? (1-4) "
-if /i "%Input%"=="1" goto "DisableReAgentc"
-if /i "%Input%"=="2" goto "DisableReAgentc"
-if /i "%Input%"=="3" goto "DisableReAgentc"
+if /i "%Input%"=="1" goto "ReAgentc"
+if /i "%Input%"=="2" goto "ReAgentc"
+if /i "%Input%"=="3" goto "ReAgentc"
 if /i "%Input%"=="4" goto "Exit"
 echo Invalid syntax!
 goto "Start"
 
-:"DisableReAgentc"
+:"ReAgentc"
 echo.
 "%windir%\System32\ReAgentc.exe" /info
 goto "DiskPartSet"
@@ -389,7 +389,7 @@ set AddAnotherDriver=
 set /p AddAnotherDriver="Do you add another driver? (Yes/No) "
 if /i "%AddAnotherDriver%"=="Yes" goto "2"
 if /i "%AddAnotherDriver%"=="No" goto "OptimizeAsk"
-echo Invalid syntax!'
+echo Invalid syntax!
 goto "AddAnotherDriver"
 
 :"3"
@@ -451,7 +451,7 @@ echo Unmounting Windows Recovery Environment from "%SystemDrive%\Mount".
 if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Discard
 if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Commit
 if not "%errorlevel%"=="0" goto "UnmountError"
-if /i "%Optimize%"=="No "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
+if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
 rd "%MountDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
