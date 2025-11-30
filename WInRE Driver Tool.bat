@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.0.5
+echo Version: 1.1.0
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -51,6 +51,7 @@ set DiskPart=
 goto "Volume"
 
 :"Volume"
+echo.
 if exist "diskpart.txt" goto "DiskPartExistVolume"
 echo Listing volumes attached to this PC.
 (echo list vol) > "diskpart.txt"
@@ -340,6 +341,9 @@ if /i "%Input%"=="3" goto "3"
 :"1"
 "%windir%\System32\Dism.exe" /Get-Drivers /Image:"%SystemDrive%\Mount"
 if /i not "%errorlevel%"=="0" goto "Error1"
+echo.
+echo Press any key to return to the main menu.
+pause > nul 2>&1
 goto "Unmount"
 
 :"Error1"
@@ -393,6 +397,8 @@ echo Invalid syntax!
 goto "AddAnotherDriver"
 
 :"3"
+"%windir%\System32\Dism.exe" /Get-Drivers /Image:"%SystemDrive%\Mount"
+if /i not "%errorlevel%"=="0" goto "Error3"
 echo.
 set DriverName=
 set /p DriverName="What is the name of your driver(s) published name? "
