@@ -1,4 +1,4 @@
-# WinRE Driver Tool v1.0.4
+# WinRE Driver Tool v1.0.5
 View/add/remove 3rd party WinRE drivers.
 
 ## Notes
