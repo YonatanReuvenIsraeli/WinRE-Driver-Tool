@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.1.0
+echo Version: 1.1.1
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -377,7 +377,7 @@ goto "2"
 :"AddDriver"
 echo.
 echo Adding driver file(s) to Windows Recovery Environment.
-"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Add-Driver /Driver:"%DriverPath%" > nul 2>&1
+"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Add-Driver /Driver:"%DriverPath%" 2>&1
 if /i not "%errorlevel%"=="0" goto "Error2"
 echo Driver file(s) added to Windows Recovery Environment.
 goto "AddAnotherDriver"
@@ -397,7 +397,7 @@ echo Invalid syntax!
 goto "AddAnotherDriver"
 
 :"3"
-"%windir%\System32\Dism.exe" /Get-Drivers /Image:"%SystemDrive%\Mount"
+"%windir%\System32\Dism.exe" /Get-Drivers /Image:"%SystemDrive%\Mount" 2>&1
 if /i not "%errorlevel%"=="0" goto "Error3"
 echo.
 set DriverName=
@@ -416,7 +416,7 @@ goto "SureDriverName"
 :"RemoveDriver"
 echo.
 echo Removing %DriverName% from Windows Recovery Environment.
-"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Remove-Driver /Driver:%DriverName% > nul 2>&1
+"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Remove-Driver /Driver:%DriverName% 2>&1
 if /i not "%errorlevel%"=="0" goto "Error3"
 echo %DriverName% removed from Windows Recovery Environment.
 goto "RemoveAnotherDriver"
