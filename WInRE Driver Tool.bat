@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.1.2
+echo Version: 1.1.3
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -458,7 +458,7 @@ if /i "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%Sys
 if /i not "%Input%"=="1" "%windir%\System32\Dism.exe" /Unmount-Image /MountDir:"%SystemDrive%\Mount" /Commit
 if not "%errorlevel%"=="0" goto "UnmountError"
 if /i not "%Input%"=="1" if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe" +s +h -a "%WinREPath%\Winre.wim"
-rd "%MountDrive%\Mount" /s /q > nul 2>&1
+rd "%SystemDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
 if /i "%Input%"=="1" if /i "%WinREAsk%"=="Yes" goto "Start"
@@ -473,7 +473,7 @@ pause > nul 2>&1
 echo.
 echo Cleaning up mounted images.
 "%windir%\System32\Dism.exe" /Cleanup-Mountpoints
-rd "%MountDrive%\Mount" /s /q > nul 2>&1
+rd "%SystemDrive%\Mount" /s /q > nul 2>&1
 echo Mounted images cleaned up.
 if /i "%Mount%"=="True" goto "MountDone"
 
