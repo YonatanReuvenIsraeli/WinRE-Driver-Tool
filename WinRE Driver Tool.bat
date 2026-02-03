@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.1.4
+echo Version: 1.1.5
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -547,7 +547,7 @@ echo Removed drive letter %WinREDriveLetter% from volume %WinREVolume%.
 if /i "%DiskPart%"=="True" goto "DiskPartDoneRemoveLetter"
 goto "Start"
 
-"DiskPartExistRemoveLetter"
+:"DiskPartExistRemoveLetter"
 set DiskPart=True
 echo.
 echo Please temporarily rename to something else or temporarily move to another location "diskpart.txt" in order for this batch file to proceed. "diskpart.txt" is not a system file. "diskpart.txt" is located in the folder "%cd%". Press any key to continue when "diskpart.txt" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
