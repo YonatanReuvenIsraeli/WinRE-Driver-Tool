@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.0.2
+echo Version: 2.0.3
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -513,8 +513,11 @@ if /i not "%Input%"=="1" if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe"
 rd "%SystemDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%Optimize%"=="Yes" goto "Export"
-goto "Start"
+if /i "%DiskPartNeeded%"=="True" if /i "%Input%"=="1" goto "RemoveDriveLetter"
+if /i "%Input%"=="1" goto "Start"
+if /i "%Optimize%"=="Yes" goto "ExportSet"
+if /i "%DiskPartNeeded%"=="True" if /i "%Optimize%"=="No" goto "RemoveDriveLetter"
+if /i "%Optimize%"=="No" goto "Start"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
@@ -531,11 +534,11 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
+if /i "%DiskPartNeeded%"=="True" if /i "%Input%"=="1" goto "RemoveDriveLetter"
 if /i "%Input%"=="1" goto "Start"
-if /i "%Input%"=="1" goto "RemoveLetter"
 if /i "%Optimize%"=="Yes" goto "ExportSet"
+if /i "%DiskPartNeeded%"=="True" if /i "%Optimize%"=="No" goto "RemoveDriveLetter"
 if /i "%Optimize%"=="No" goto "Start"
-if /i "%Optimize%"=="No" goto "RemoveLetter"
 
 :"ExportSet"
 set Export=
