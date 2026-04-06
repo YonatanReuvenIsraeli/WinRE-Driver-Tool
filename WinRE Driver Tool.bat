@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 1.1.6
+echo Version: 2.0.0
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -34,19 +34,77 @@ echo [4] Exit.
 echo.
 set Input=
 set /p Input="What do you want to do? (1-4) "
-if /i "%Input%"=="1" goto "ReAgentc"
-if /i "%Input%"=="2" goto "ReAgentc"
-if /i "%Input%"=="3" goto "ReAgentc"
+if /i "%Input%"=="1" goto "DiskPartNeededSet"
+if /i "%Input%"=="2" goto "DiskPartNeededSet"
+if /i "%Input%"=="3" goto "DiskPartNeededSet"
 if /i "%Input%"=="4" goto "Exit"
 echo Invalid syntax!
 goto "Start"
 
-:"ReAgentc"
+:"DiskPartNeededSet"
+set DiskPartNeeded=
+goto "ReAgentcStatus"
+
+:"ReAgentcStatus"
+if exist "ReAgentcStatus.txt" goto "DiskPartExistReAgentcStatus"
 echo.
-"%windir%\System32\ReAgentc.exe" /info
+echo Getting Windows Recovery Environment status.
+"%windir%\System32\ReAgentc.exe" /info | "%windir%\System32\find.exe" /i "Windows RE status:" > "ReAgentcStatus.txt"
+set /p ReAgentcStatus=< "ReAgentcStatus.txt"
+del "ReAgentcStatus.txt" /f /q > nul 2>&1
+if /i "%ReAgentcStatus%"=="    Windows RE status:         Enabled" echo Got Windows Recovery Environment status.
+if /i "%ReAgentcStatus%"=="    Windows RE status:         Enabled" if /i "%ReAgentcStatusExist%"=="True" goto "ReAgentcStatusDone"
+if /i "%ReAgentcStatus%"=="    Windows RE status:         Enabled" goto "ReAgentcLocation"
+echo Windows Recovery Environment may be disabled.
+if /i "%ReAgentcStatusExist%"=="True" goto "ReAgentcStatusDone"
 goto "DiskPartSet"
 
+:"DiskPartExistReAgentcStatus"
+set ReAgentcStatusExist=True
+echo.
+echo Please temporarily rename to something else or temporarily move to another location "ReAgentcStatus.txt" in order for this batch file to proceed. "ReAgentcStatus.txt" is not a system file. "ReAgentcStatus.txt" is located in the folder "%cd%". Press any key to continue when "ReAgentcStatus.txt" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
+pause > nul 2>&1
+goto "ReAgentcStatus"
+
+:"ReAgentcStatusDone"
+set ReAgentcStatusExist=
+echo.
+echo You can now rename or move the file back to "ReAgentcStatus.txt". Press any key to continue.
+pause > nul 2>&1
+if /i "%ReAgentcStatus%"=="    Windows RE status:         Enabled" goto "ReAgentcLocation"
+goto "Start"
+
+:"ReAgentcLocation"
+if exist "ReAgentcLocation.txt" goto "ReAgentcLocationExist"
+echo.
+echo Getting Windows Recovery Environment (Winre.wim) location.
+"%windir%\System32\ReAgentc.exe" /info | "%windir%\System32\find.exe" /i "Windows RE location:" > "ReAgentcLocation.txt"
+set /p ReAgentcLocation=< "ReAgentcLocation.txt"
+set WinREPath=%ReAgentcLocation:~31%
+del "ReAgentcLocation.txt" /f /q > nul 2>&1
+if not exist "%WinREPath%\Winre.wim" echo Windows Recovery Environment (Winre.wim) not found!
+echo Got Windows Recovery Environment (Winre.wim) location.
+if /i "%ReAgentcLocationExist%"=="True" goto "ReAgentcLocationDone"
+if not exist "%WinREPath%\Winre.wim" goto "DiskPartSet"
+goto "MountSet"
+
+:"ReAgentcLocationExist"
+set ReAgentcLocationExist=True
+echo.
+echo Please temporarily rename to something else or temporarily move to another location "ReAgentcLocation.txt" in order for this batch file to proceed. "ReAgentcLocation.txt" is not a system file. "ReAgentcLocation.txt" is located in the folder "%cd%". Press any key to continue when "ReAgentcLocation.txt" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
+pause > nul 2>&1
+goto "ReAgentcLocation"
+
+:"ReAgentcLocationDone"
+set ReAgentcLocationExist=
+echo.
+echo You can now rename or move the file back to "ReAgentcLocation.txt". Press any key to continue.
+pause > nul 2>&1
+if not exist "%WinREPath%\Winre.wim" goto "DiskPartSet"
+goto "MountSet"
+
 :"DiskPartSet"
+set DiskPartNeeded=True
 set DiskPart=
 goto "Volume"
 
@@ -93,10 +151,10 @@ goto "SureWinREAsk1"
 
 :"WinREAsk2"
 echo.
-set WinREAsk=
-set /p WinREAsk="Is the WinRE volume %WinREVolume% already assigned a drive letter? (Yes/No) "
-if /i "%WinREAsk%"=="Yes" goto "SureWinREAsk2"
-if /i "%WinREAsk%"=="No" goto "WinREDriveLetter"
+set WinREAsk2=
+set /p WinREAsk2="Is the WinRE volume %WinREVolume% already assigned a drive letter? (Yes/No) "
+if /i "%WinREAsk2%"=="Yes" goto "SureWinREAsk2"
+if /i "%WinREAsk2%"=="No" goto "WinREDriveLetter"
 echo Invalid syntax!
 goto "WinREAsk2"
 
@@ -184,8 +242,6 @@ echo Assigning WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
 if not "%errorlevel%"=="0" goto "AssignDriveLetterWinREError"
 del "diskpart.txt" /f /q > nul 2>&1
 echo Assigned WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
-set DriveLetterWinRE=%WinREDriveLetter%
-if /i "%WinREAsk%"=="No" if /i "%DiskPart%"=="True" goto "DiskPartDone"
 goto "WinREPath"
 
 :"DiskPartExistAssignDriveLetterWinRE"
@@ -200,12 +256,6 @@ del "diskpart.txt" /f /q > nul 2>&1
 echo There has been an error! Press any key to try again.
 pause > nul 2>&1
 goto "WinREDriveLetterExist"
-
-:"DiskPartDone"
-echo.
-echo You can now rename or move the file back to "diskpart.txt". Press any key to continue.
-pause > nul 2>&1
-goto "WinREPath"
 
 :"DriveLetterWinRE"
 echo.
@@ -260,13 +310,14 @@ goto "Volume"
 :"WinREPath"
 echo.
 set WinREPath=
-set /p WinREPath="What is the full path to the folder that Windows Recovery Environment ("Winre.wim") is in? "
+set /p WinREPath="What is the full path to the folder that Windows Recovery Environment ("Winre.wim") is in? %DriveLetterWinRE%\"
+set WinREPath=%DriveLetterWinRE%\%WinREPath%
 goto "SureWinREPath"
 
 :"SureWinREPath"
 echo.
 set SureWinREPath=
-set /p SureWinREPath="Are you "%WinREPath%" is the path to the folder that Windows Recovery Environment ("Winre.wim") is in? (Yes/No) "
+set /p SureWinREPath="Are you "%WinREPath%\Winre.wim" is the full path to the Windows Recovery Environment? (Yes/No) "
 if /i "%SureWinREPath%"=="Yes" goto "WinREPathCheckExist"
 if /i "%SureWinREPath%"=="No" goto "WinREPath"
 echo Invalid syntax!
@@ -424,7 +475,7 @@ goto "RemoveAnotherDriver"
 :"Error3"
 echo There has been an error! Press any key to try again.
 pause > nul 2>&1
-goto "3"
+goto "RemoveAnotherDriver"
 
 :"RemoveAnotherDriver"
 echo.
@@ -461,11 +512,8 @@ if /i not "%Input%"=="1" if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe"
 rd "%SystemDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%Input%"=="1" if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%Input%"=="1" if /i "%WinREAsk%"=="No" goto "RemoveLetter"
 if /i "%Optimize%"=="Yes" goto "Export"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+goto "Start"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
@@ -482,11 +530,11 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
-if /i "%Input%"=="1" if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%Input%"=="1" if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+if /i "%Input%"=="1" goto "Start"
+if /i "%Input%"=="1" goto "RemoveLetter"
 if /i "%Optimize%"=="Yes" goto "ExportSet"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%Optimize%"=="No" if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+if /i "%Optimize%"=="No" goto "Start"
+if /i "%Optimize%"=="No" goto "RemoveLetter"
 
 :"ExportSet"
 set Export=
@@ -522,49 +570,46 @@ copy "%SystemDrive%\Winre.wim" "%WinREPath%\Winre.wim" /y /v > nul 2>&1
 del "%SystemDrive%\Winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten with optimized image.
 if /i "%Export%"=="True" goto "ExportDone"
-if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%WinREAsk%"=="No" goto "RemoveLetter"
+if /i "%DiskPartNeeded%"=="True" goto "RemoveDriveLetter"
+goto "Start"
 
 :"ExportDone"
 set Export=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Winre.wim". Press any key to continue.
 pause > nul 2>&1
-if /i "%WinREAsk%"=="Yes" goto "Start"
-if /i "%WinREAsk%"=="No" goto "RemoveLetter"
-
-:"RemoveLetter"
-if exist "diskpart.txt" goto "DiskPartExistRemoveLetter"
-echo.
-echo Removing drive letter %WinREDriveLetter% from volume %WinREVolume%.
-(echo sel vol %WinREVolume%) > "diskpart.txt"
-(echo remove letter=%WinREDriveLetter%) >> "diskpart.txt"
-(echo exit) >> "diskpart.txt"
-"%windir%\System32\diskpart.exe" /s "diskpart.txt" > nul 2>&1
-if not "%errorlevel%"=="0" goto "RemoveLetterError"
-del "diskpart.txt" /f /q > nul 2>&1
-echo Removed drive letter %WinREDriveLetter% from volume %WinREVolume%.
-if /i "%DiskPart%"=="True" goto "DiskPartDoneRemoveLetter"
+if /i "%DiskPartNeeded%"=="True" goto "RemoveDriveLetter"
 goto "Start"
 
-:"DiskPartExistRemoveLetter"
-set DiskPart=True
+:"RemoveDriveLetter"
+if exist "diskpart.txt" goto "DiskPartExistRemoveDriveLetter"
 echo.
+echo Removing drive letter "%DriveLetterWinRE%" from WinRE volume.
+(echo sel vol %WinREVolume%) > "diskpart.txt"
+(echo remove letter=%DriveLetterWinRE%) >> "diskpart.txt"
+(echo exit) >> "diskpart.txt"
+"%windir%\System32\diskpart.exe" /s "diskpart.txt" > nul 2>&1
+if not "%errorlevel%"=="0" goto "RemoveDriveLetterError"
+del "diskpart.txt" /f /q > nul 2>&1
+echo Removed drive letter "%DriveLetterWinRE%" from WinRE volume.
+if /i "%DiskPart%"=="True" goto "DiskPartDone"
+goto "Start"
+
+:"DiskPartExistRemoveDriveLetter"
+set DiskPart=True
 echo Please temporarily rename to something else or temporarily move to another location "diskpart.txt" in order for this batch file to proceed. "diskpart.txt" is not a system file. "diskpart.txt" is located in the folder "%cd%". Press any key to continue when "diskpart.txt" is renamed to something else or moved to another location. This batch file will let you know when you can rename it back to its original name or move it back to its original location.
 pause > nul 2>&1
-goto "RemoveLetter"
+goto "RemoveDriveLetter"
 
-:"RemoveLetterError"
+:"RemoveDriveLetterError"
 del "diskpart.txt" /f /q > nul 2>&1
-echo.
 echo There has been an error! Press any key to try again.
 pause > nul 2>&1
-goto "RemoveLetter"
+goto "RemoveDriveLetter"
 
-:"DiskPartDoneRemoveLetter"
+:"DiskPartDone"
 echo.
-echo You can now rename or move the file back to "diskpart.txt". Press any key to continue.
-pause > nul 2>&1
+echo You can now rename or move the file back to "diskpart.txt".
 goto "Start"
 
 :"Exit"
