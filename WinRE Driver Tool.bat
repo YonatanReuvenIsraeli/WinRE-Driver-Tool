@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.0.1
+echo Version: 2.0.2
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -242,6 +242,7 @@ echo Assigning WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
 if not "%errorlevel%"=="0" goto "AssignDriveLetterWinREError"
 del "diskpart.txt" /f /q > nul 2>&1
 echo Assigned WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
+set DriveLetterWinRE=%WinREDriveLetter%
 goto "WinREPath"
 
 :"DiskPartExistAssignDriveLetterWinRE"
