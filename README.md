@@ -1,4 +1,4 @@
-# WinRE Driver Tool v2.0.1
+# WinRE Driver Tool v2.0.2
 View/add/remove 3rd party WinRE drivers.
 
 ## Use cases
