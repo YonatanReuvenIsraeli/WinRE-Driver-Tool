@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.0.3
+echo Version: 2.0.4
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -34,16 +34,12 @@ echo [4] Exit.
 echo.
 set Input=
 set /p Input="What do you want to do? (1-4) "
-if /i "%Input%"=="1" goto "DiskPartNeededSet"
-if /i "%Input%"=="2" goto "DiskPartNeededSet"
-if /i "%Input%"=="3" goto "DiskPartNeededSet"
+if /i "%Input%"=="1" goto "ReAgentcStatus"
+if /i "%Input%"=="2" goto "ReAgentcStatus"
+if /i "%Input%"=="3" goto "ReAgentcStatus"
 if /i "%Input%"=="4" goto "Exit"
 echo Invalid syntax!
 goto "Start"
-
-:"DiskPartNeededSet"
-set DiskPartNeeded=
-goto "ReAgentcStatus"
 
 :"ReAgentcStatus"
 if exist "ReAgentcStatus.txt" goto "DiskPartExistReAgentcStatus"
@@ -104,7 +100,6 @@ if not exist "%WinREPath%\Winre.wim" goto "DiskPartSet"
 goto "MountSet"
 
 :"DiskPartSet"
-set DiskPartNeeded=True
 set DiskPart=
 goto "Volume"
 
@@ -513,11 +508,9 @@ if /i not "%Input%"=="1" if /i "%Optimize%"=="No" "%windir%\System32\attrib.exe"
 rd "%SystemDrive%\Mount" /s /q > nul 2>&1
 echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
-if /i "%DiskPartNeeded%"=="True" if /i "%Input%"=="1" goto "RemoveDriveLetter"
-if /i "%Input%"=="1" goto "Start"
 if /i "%Optimize%"=="Yes" goto "ExportSet"
-if /i "%DiskPartNeeded%"=="True" if /i "%Optimize%"=="No" goto "RemoveDriveLetter"
-if /i "%Optimize%"=="No" goto "Start"
+if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
+goto "Start"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
@@ -534,11 +527,9 @@ set Mount=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Mount". Press any key to continue.
 pause > nul 2>&1
-if /i "%DiskPartNeeded%"=="True" if /i "%Input%"=="1" goto "RemoveDriveLetter"
-if /i "%Input%"=="1" goto "Start"
 if /i "%Optimize%"=="Yes" goto "ExportSet"
-if /i "%DiskPartNeeded%"=="True" if /i "%Optimize%"=="No" goto "RemoveDriveLetter"
-if /i "%Optimize%"=="No" goto "Start"
+if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
+goto "Start"
 
 :"ExportSet"
 set Export=
@@ -574,7 +565,7 @@ copy "%SystemDrive%\Winre.wim" "%WinREPath%\Winre.wim" /y /v > nul 2>&1
 del "%SystemDrive%\Winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten with optimized image.
 if /i "%Export%"=="True" goto "ExportDone"
-if /i "%DiskPartNeeded%"=="True" goto "RemoveDriveLetter"
+if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
 goto "Start"
 
 :"ExportDone"
@@ -582,7 +573,7 @@ set Export=
 echo.
 echo You can now rename or move the file back to "%SystemDrive%\Winre.wim". Press any key to continue.
 pause > nul 2>&1
-if /i "%DiskPartNeeded%"=="True" goto "RemoveDriveLetter"
+if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
 goto "Start"
 
 :"RemoveDriveLetter"
