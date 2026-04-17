@@ -1,4 +1,4 @@
-# WinRE Driver Tool v2.0.4
+# WinRE Driver Tool v2.1.0
 View/add/remove 3rd party WinRE drivers.
 
 ## Use cases
@@ -9,4 +9,4 @@ View/add/remove 3rd party WinRE drivers.
 - This is not the same thing as https://github.com/YonatanReuvenIsraeli/Windows-PE-RE-Driver-Loader as that supports WinPE and WinRE and the loaded drivers only last until reboot while this only supports WinRE and changes persist after reboot.
 - Windows Recovery Environment must be enabled for this batch file to work.
 - This batch file may clear your auto-mount points.
-- Common locations for the Windows Recovery Environment ("Winre.wim") are `"?:\Recovery\WindowsRE"` and `"%windir%\System32\Recovery"`.
+- Common locations for "Winre.wim" are `"?:\Recovery\WindowsRE"` and `"%windir%\System32\Recovery"`.
