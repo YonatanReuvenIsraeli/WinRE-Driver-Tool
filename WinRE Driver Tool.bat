@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.0.4
+echo Version: 2.1.0
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -132,13 +132,13 @@ goto "Volume"
 :"WinREAsk1"
 echo.
 set WinREVolume=
-set /p WinREVolume="What volume is the WinRE volume? (0-?) "
+set /p WinREVolume="What volume is "Winre.wim" located in? (0-?) "
 goto "SureWinREAsk1"
 
 :"SureWinREAsk1"
 echo.
 set SureWinREAsk1=
-set /p SureWinREAsk1="Are you sure volume %WinREVolume% is the WinRE volume? (Yes/No) "
+set /p SureWinREAsk1="Are you sure volume %WinREVolume% is the volume that "Winre.wim" is located in? (Yes/No) "
 if /i "%SureWinREAsk1%"=="Yes" goto "WinREAsk2"
 if /i "%SureWinREAsk1%"=="No" goto "Volume"
 echo Invalid syntax!
@@ -147,7 +147,7 @@ goto "SureWinREAsk1"
 :"WinREAsk2"
 echo.
 set WinREAsk2=
-set /p WinREAsk2="Is the WinRE volume %WinREVolume% already assigned a drive letter? (Yes/No) "
+set /p WinREAsk2="Is the "Winre.wim" volume %WinREVolume% already assigned a drive letter? (Yes/No) "
 if /i "%WinREAsk2%"=="Yes" goto "SureWinREAsk2"
 if /i "%WinREAsk2%"=="No" goto "WinREDriveLetter"
 echo Invalid syntax!
@@ -156,7 +156,7 @@ goto "WinREAsk2"
 :"SureWinREAsk2"
 echo.
 set SureWinREAsk2=
-set /p SureWinREAsk2="Are you sure WinRE volume %WinREVolume% is already assigned a drive letter? (Yes/No) "
+set /p SureWinREAsk2="Are you sure "Winre.wim" volume %WinREVolume% is already assigned a drive letter? (Yes/No) "
 if /i "%SureWinREAsk2%"=="Yes" goto "DriveLetterWinRE"
 if /i "%SureWinREAsk2%"=="No" goto "WinREAsk2"
 echo Invalid syntax!
@@ -228,7 +228,7 @@ goto "AssignDriveLetterWinRE"
 :"AssignDriveLetterWinRE"
 if exist "diskpart.txt" goto "DiskPartExistAssignDriveLetterWinRE"
 echo.
-echo Assigning WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
+echo Assigning "Winre.wim" volume %WinREVolume% drive letter "%WinREDriveLetter%".
 (echo automount scrub) > "diskpart.txt"
 (echo sel vol %WinREVolume%) >> "diskpart.txt"
 (echo assign letter=%WinREDriveLetter%) >> "diskpart.txt"
@@ -236,7 +236,7 @@ echo Assigning WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
 "%windir%\System32\diskpart.exe" /s "diskpart.txt" > nul 2>&1
 if not "%errorlevel%"=="0" goto "AssignDriveLetterWinREError"
 del "diskpart.txt" /f /q > nul 2>&1
-echo Assigned WinRE volume %WinREVolume% drive letter "%WinREDriveLetter%".
+echo Assigned "Winre.wim" volume %WinREVolume% drive letter "%WinREDriveLetter%".
 set DriveLetterWinRE=%WinREDriveLetter%
 goto "WinREPath"
 
@@ -415,16 +415,26 @@ goto "SureDriverPath"
 
 :"CheckExistAddDriver"
 if not exist "%DriverPath%" goto "DriverNotExist"
-goto "AddDriver"
+if exist "%DriverPath%\*.*" goto "AddDriverFolder"
+goto "AddDriverFile"
 
 :"DriverNotExist"
 echo "%DriverPath%" does not exist! You can try again.
 goto "2"
 
-:"AddDriver"
+:"AddDriverFolder"
 echo.
 echo Adding driver file(s) to Windows Recovery Environment.
-"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Add-Driver /Driver:"%DriverPath%"
+"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Add-Driver /Driver:"%DriverPath%" /Recurse /ForceUnsigned
+if /i not "%errorlevel%"=="0" goto "Error2"
+echo Driver file(s) added to Windows Recovery Environment.
+goto "AddAnotherDriver"
+
+
+:"AddDriverFile"
+echo.
+echo Adding driver file to Windows Recovery Environment.
+"%windir%\System32\Dism.exe" /Image:"%SystemDrive%\Mount" /Add-Driver /Driver:"%DriverPath%" /ForceUnsigned
 if /i not "%errorlevel%"=="0" goto "Error2"
 echo Driver file(s) added to Windows Recovery Environment.
 goto "AddAnotherDriver"
@@ -579,14 +589,14 @@ goto "Start"
 :"RemoveDriveLetter"
 if exist "diskpart.txt" goto "DiskPartExistRemoveDriveLetter"
 echo.
-echo Removing drive letter "%DriveLetterWinRE%" from WinRE volume.
+echo Removing drive letter "%DriveLetterWinRE%" from "Winre.wim" volume.
 (echo sel vol %WinREVolume%) > "diskpart.txt"
 (echo remove letter=%DriveLetterWinRE%) >> "diskpart.txt"
 (echo exit) >> "diskpart.txt"
 "%windir%\System32\diskpart.exe" /s "diskpart.txt" > nul 2>&1
 if not "%errorlevel%"=="0" goto "RemoveDriveLetterError"
 del "diskpart.txt" /f /q > nul 2>&1
-echo Removed drive letter "%DriveLetterWinRE%" from WinRE volume.
+echo Removed drive letter "%DriveLetterWinRE%" from "Winre.wim" volume.
 if /i "%DiskPart%"=="True" goto "DiskPartDone"
 goto "Start"
 
