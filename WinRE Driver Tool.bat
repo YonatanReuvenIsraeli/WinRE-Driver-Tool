@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.1.0
+echo Version: 2.1.1
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -256,7 +256,7 @@ goto "WinREDriveLetterExist"
 :"DriveLetterWinRE"
 echo.
 set DriveLetterWinRE=
-set /p DriveLetterWinRE="What is the drive letter that WinRE is installed on? (A:-Z:) "
+set /p DriveLetterWinRE="What is the drive letter of the WinRE volume %WinREVolume%? (A:-Z:) "
 if /i "%DriveLetterWinRE%"=="A:" goto "SureDriveLetterWinRE"
 if /i "%DriveLetterWinRE%"=="B:" goto "SureDriveLetterWinRE"
 if /i "%DriveLetterWinRE%"=="C:" goto "SureDriveLetterWinRE"
@@ -289,7 +289,7 @@ goto "DriveLetterWinRE"
 :"SureDriveLetterWinRE"
 echo.
 set SureDriveLetterWinRE=
-set /p SureDriveLetterWinRE="Are you sure "%DriveLetterWinRE%" is the drive letter that WinRE is installed on? (Yes/No) "
+set /p SureDriveLetterWinRE="Are you sure "%DriveLetterWinRE%" is the drive letter of WinRE volume %WinREVolume%? (Yes/No) "
 if /i "%SureDriveLetterWinRE%"=="Yes" goto "CheckExistDriveLetterWinRE"
 if /i "%SureDriveLetterWinRE%"=="No" goto "DriveLetterWinRE"
 echo Invalid syntax!
