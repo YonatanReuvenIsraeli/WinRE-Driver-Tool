@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.1.1
+echo Version: 2.2.0
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -520,7 +520,7 @@ echo Windows Recovery Environment unmounted from "%SystemDrive%\Mount".
 if /i "%Mount%"=="True" goto "MountDone"
 if /i "%Optimize%"=="Yes" goto "ExportSet"
 if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
-goto "Start"
+goto "ReAgentcBitLockerCheck"
 
 :"UnmountError"
 echo There has been an error and all images need to be unmounted! Make sure to save all changes you have made to your mounted images before pressing any key to unmount all images. Press any key to unmount all images when you are ready to unmount all images.
@@ -539,7 +539,7 @@ echo You can now rename or move the file back to "%SystemDrive%\Mount". Press an
 pause > nul 2>&1
 if /i "%Optimize%"=="Yes" goto "ExportSet"
 if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
-goto "Start"
+goto "ReAgentcBitLockerCheck"
 
 :"ExportSet"
 set Export=
@@ -576,7 +576,7 @@ del "%SystemDrive%\Winre.wim" /f /q > nul 2>&1
 echo Windows Recovery Environment overwritten with optimized image.
 if /i "%Export%"=="True" goto "ExportDone"
 if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
-goto "Start"
+goto "ReAgentcBitLockerCheck"
 
 :"ExportDone"
 set Export=
@@ -584,7 +584,7 @@ echo.
 echo You can now rename or move the file back to "%SystemDrive%\Winre.wim". Press any key to continue.
 pause > nul 2>&1
 if /i "%WinREAsk2%"=="No" goto "RemoveDriveLetter"
-goto "Start"
+goto "ReAgentcBitLockerCheck"
 
 :"RemoveDriveLetter"
 if exist "diskpart.txt" goto "DiskPartExistRemoveDriveLetter"
@@ -598,7 +598,7 @@ if not "%errorlevel%"=="0" goto "RemoveDriveLetterError"
 del "diskpart.txt" /f /q > nul 2>&1
 echo Removed drive letter "%DriveLetterWinRE%" from "Winre.wim" volume.
 if /i "%DiskPart%"=="True" goto "DiskPartDone"
-goto "Start"
+goto "ReAgentcBitLockerCheck"
 
 :"DiskPartExistRemoveDriveLetter"
 set DiskPart=True
@@ -615,6 +615,23 @@ goto "RemoveDriveLetter"
 :"DiskPartDone"
 echo.
 echo You can now rename or move the file back to "diskpart.txt".
+goto "ReAgentcBitLockerCheck"
+
+:"ReAgentcBitLockerCheck"
+echo.
+echo Checking BitLocker status on drive letter "%SystemDrive%".
+"%windir%\System32\manage-bde.exe" -status "%SystemDrive%" -protectionaserrorlevel
+if /i "%errorlevel%"=="0" goto "ReAgentcBitLocker"
+echo Bitlocker is disabled on drive letter "%SystemDrive%".
+goto "Start"
+
+:"ReAgentcBitLocker"
+echo BitLocker is enabled on drive letter "%SystemDrive%".
+echo.
+echo Reconfiguring Windows Recovery Environment with BitLocker.
+"%windir%\System32\ReAgentc.exe" /disable > nul 2>%1
+"%windir%\System32\ReAgentc.exe" /enable > nul 2>%1
+echo Windows Recovery Environment reconfigured with BitLocker.
 goto "Start"
 
 :"Exit"
