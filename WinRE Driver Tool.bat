@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.2.0
+echo Version: 2.2.1
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -629,8 +629,8 @@ goto "Start"
 echo BitLocker is enabled on drive letter "%SystemDrive%".
 echo.
 echo Reconfiguring Windows Recovery Environment with BitLocker.
-"%windir%\System32\ReAgentc.exe" /disable > nul 2>%1
-"%windir%\System32\ReAgentc.exe" /enable > nul 2>%1
+"%windir%\System32\ReAgentc.exe" /disable > nul 2>&1
+"%windir%\System32\ReAgentc.exe" /enable > nul 2>&1
 echo Windows Recovery Environment reconfigured with BitLocker.
 goto "Start"
 
