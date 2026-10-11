@@ -2,7 +2,7 @@
 title WinRE Driver Tool
 setlocal
 echo Program Name: WinRE Driver Tool
-echo Version: 2.1.1
+echo Version: 2.1.2
 echo License: GNU General Public License v3.0
 echo Developer: @YonatanReuvenIsraeli
 echo GitHub: https://github.com/YonatanReuvenIsraeli
@@ -17,13 +17,13 @@ goto "Start"
 echo.
 echo Please run this batch file as an administrator. Press any key to close this batch file.
 pause > nul 2>&1
-goto "Close"
+goto "Exit"
 
 :"InPERE"
 echo.
 echo You are in Windows Preinstallation Environment or Windows Recovery Environment! You must run this batch file in Windows. Press any key to close this batch file.
 pause > nul 
-goto "Close"
+goto "Exit"
 
 :"Start"
 echo.
